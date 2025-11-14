@@ -1,0 +1,74 @@
+* {
+  font-family: Noto Sans, sans-serif;
+  font-size: 25px;
+}
+
+header {
+  margin: 50px;
+  padding: 0px;
+}
+
+main {
+  margin: 50px;
+  padding: 0px;
+}
+
+h1 {
+  font-family: sans-serif;
+  font-size: 58px;
+  color: black;
+}
+
+h2 {
+  font-size: 40px;
+  color: black;
+}
+
+body {
+  padding: 0px;
+  margin: 0px;
+}
+
+html {
+  padding: 0px;
+  margin: 0px;
+}
+
+img {
+  width: 960px;
+  height: 640px;
+}
+
+table, th, td {
+  border: 2px solid black;
+  border-collapse: collapse;
+  text-align: center;
+  padding: 10px;
+}
+
+nav ul {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  color: red;
+}
+
+footer {
+  background-color: black;
+  margin: 0;
+  padding: 30px;
+}
+
+footer a {
+  color: white;
+}
