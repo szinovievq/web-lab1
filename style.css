@@ -3,40 +3,43 @@
   font-size: 25px;
 }
 
-header {
-  margin: 50px;
+html, body {
+  height: 100%;
+}
+
+body {
   padding: 0px;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+    padding: 50px 50px 0 50px;
+    margin: 0;
 }
 
 main {
-  margin: 50px;
-  padding: 0px;
+    padding: 0 50px 50px 50px;
+    margin: 0;
+    flex: 1 0 auto;
 }
 
 h1 {
   font-family: sans-serif;
   font-size: 58px;
   color: black;
+  margin: 0 0 30px 0;
 }
 
 h2 {
   font-size: 40px;
-  color: black;
-}
-
-body {
-  padding: 0px;
-  margin: 0px;
-}
-
-html {
-  padding: 0px;
-  margin: 0px;
+  color: darkblue;
 }
 
 img {
   width: 960px;
-  height: 640px;
+  height: auto;
 }
 
 table, th, td {
@@ -48,7 +51,8 @@ table, th, td {
 
 nav ul {
   display: flex;
-  gap: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -60,15 +64,66 @@ a {
 }
 
 a:hover {
-  color: red;
+  color: tomato;
+}
+
+nav a.active {
+  color: tomato;
 }
 
 footer {
   background-color: black;
   margin: 0;
   padding: 30px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 footer a {
   color: white;
+}
+
+.first-col {
+  text-align: left;
+}
+
+@media (max-width: 800px) {
+  nav ul {
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  img {
+    width: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    text-align: center;
+  }
+
+  nav ul {
+      flex-direction: column;
+      align-items: center;
+    }
+
+  a {
+    font-size: 29px;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  table, th, td {
+    font-size: 23px;
+  }
+
+}
+
+@media(max-width: 400px){
+  table, th, td {
+    font-size: 21px;
+  }
 }
