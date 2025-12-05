@@ -19,6 +19,7 @@
 	padding-left: 40px;
 	padding-right: 40px;
 	border-radius: 35px;
+	border: 2px solid white;
 	cursor: pointer;
 	filter: drop-shadow(17px 19px 24px rgba(0, 0, 0, 0.13));
 	background: white;
@@ -28,7 +29,6 @@
 
 .food-card:hover {
 	border: 2px solid tomato;
-	border-radius: 35px;
 }
 
 .food-card:hover button{
@@ -152,6 +152,11 @@ button.form-btn {
 	color: black;
 	padding-bottom: 5px;
 	padding-top: 5px;
+}
+
+h3 {
+	font-weight: normal;
+	font-size: 1.2rem;
 }
 
 @media (max-width: 800px) {
