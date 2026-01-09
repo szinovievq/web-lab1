@@ -159,6 +159,142 @@ h3 {
 	font-size: 1.2rem;
 }
 
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 12px;
+    color: #274074;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.filter-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.filter-btn.active {
+    background-color: rgba(123, 148, 212, 0.5);
+}
+
+/*Лабораторная 6*/
+
+section.combo h2 {
+    display: block;      
+    text-align: center;  
+    width: 100%;           
+    margin-bottom: 20px;
+}
+
+.combo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 40px 20px;
+    width: 100%;
+    margin: 40px 0;
+    align-items: start;
+}
+
+.combo-box {
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: nowrap;   
+    justify-content: center; 
+    align-items: flex-start;
+    gap: 5px;             
+    padding: 20px 10px;    
+    width: 100%;         
+    box-sizing: border-box;
+}
+
+.combo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;         
+    flex-shrink: 1;         
+}
+.combo-item img {
+    width: 75px;          
+    height: auto;
+    margin-bottom: 8px;
+    transition: transform 0.3s ease;
+}
+
+.combo-item img:hover {
+    transform: translateY(-10px) scale(1.1);
+}
+
+.combo-item span {
+    font-size: 20px;       
+    text-align: center;
+    line-height: 1.1;
+    font-weight: 500;     
+}
+
+.combo-item .add-info {
+    font-size: 18px;       
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.combo-box .combo-item {
+    width: auto; 
+    max-width: 200px;
+}
+
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+}
+
+.modal-content {
+    background: white;
+    padding: 30px 50px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content p {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#modal-ok {
+    background: white;
+    border: 2px solid black;
+    border-radius: 15px;
+    padding: 10px 60px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#modal-ok:hover {
+    background: black;
+    color: white;
+}
+
 @media (max-width: 800px) {
 	.grid-food {
 		grid-template-columns: repeat(2, 1fr);

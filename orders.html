@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+		<meta charset="utf-8">
+		<title>Food Construct</title>
+		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="lunch-styles.css">
+		<link rel="stylesheet" href="checkout.css">
+		<link rel="stylesheet" href="orders-styles.css">
+	</head>
+	<header>
+		<h1>Food Construct</h1>
+		<nav>
+			<ul>
+				<li><a href="home.html">О нас</a></li>
+				<li><a href="do_lunch.html">Собрать ланч</a></li>
+				<li><a href="checkout.html">Оформить заказ</a></li>
+				<li><a href="orders.html" class="active">Заказы</a></li>
+				<li><a href="#contacts">Контакты</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+	    <section class="orders-history">
+	        <h2>История заказов</h2>
+	        <table class="orders-table">
+	            <thead>
+	                <tr>
+	                    <th>№</th>
+	                    <th>Дата оформления</th>
+	                    <th>Состав заказа</th>
+	                    <th>Стоимость</th>
+	                    <th>Время доставки</th>
+	                    <th>Действия</th>
+	                </tr>
+	            </thead>
+	            <tbody id="orders-table-body">
+	                </tbody>
+	        </table>
+	    </section>
+
+	    <div id="modal-overlay" class="modal-overlay hidden">
+	        <div id="modal-content" class="modal-window">
+	            </div>
+	    </div>
+
+	    <div id="notification-container"></div>
+	</main>
+
+	<div id="modal-overlay" class="modal-overlay hidden">
+	    <div class="modal-window">
+	        <div id="modal-content"></div>
+	    </div>
+	</div>
+
+	<template id="view-order-template">
+	    <div class="modal-header">
+	        <h3>Просмотр заказа</h3>
+	        <span class="close-btn" onclick="closeModal()"></span>
+	    </div>
+	    <div class="modal-body">
+	        <div class="info-row">
+	            <span class="label">Дата оформления</span>
+	            <span class="value" data-field="created_at"></span>
+	        </div>
+	        <h4>Доставка</h4>
+	        <div class="info-row"><span class="label">Имя получателя</span><span class="value" data-field="full_name"></span></div>
+	        <div class="info-row"><span class="label">Адрес доставки</span><span class="value" data-field="delivery_address"></span></div>
+	        <div class="info-row"><span class="label">Время доставки</span><span class="value" data-field="delivery_time"></span></div>
+	        <div class="info-row"><span class="label">Телефон</span><span class="value" data-field="phone"></span></div>
+	        <div class="info-row"><span class="label">Email</span><span class="value" data-field="email"></span></div>
+
+	        <h4>Комментарий</h4>
+	        <p class="comment-text" data-field="comment"></p>
+
+	        <h4>Состав заказа</h4>
+	        <div id="view-composition"></div>
+	        <div class="sum">Стоимость: <span data-field="total_price"></span>₽</div>
+	    </div>
+	    <div class="modal-footer">
+	        <button class="btn-ok" onclick="closeModal()">OK</button>
+	    </div>
+	</template>
+
+	<template id="edit-order-template">
+	    <div class="modal-header">
+	        <h3>Редактирование заказа</h3>
+	        <span class="close-btn" onclick="closeModal()"></span>
+	    </div>
+	    <div class="modal-body">
+	        <div class="info-row">
+	            <span class="label">Дата оформления</span>
+	            <span class="value" data-field="created_at"></span>
+	        </div>
+	        
+	        <h4>Доставка</h4>
+	        <form id="edit-order-form" class="input-grid">
+	            <label>Имя получателя</label>
+	            <input type="text" name="full_name" required>
+	            
+	            <label>Адрес доставки</label>
+	            <input type="text" name="delivery_address" required>
+	            
+	            <label>Время доставки</label>
+	            <input type="time" name="delivery_time" step="300"  min="07:00" max="23:00" required>
+	            
+	            <label>Телефон</label>
+	            <input type="tel" name="phone" required>
+	            
+	            <label>Email</label>
+	            <input type="email" name="email" required>
+	        </form>
+
+	        <h4>Комментарий</h4>
+	        <textarea name="comment" form="edit-order-form" class="modal-textarea"></textarea>
+
+	        <h4>Состав заказа</h4>
+	        <div id="edit-composition"></div>
+	        <div class="total-price">Стоимость: <span data-field="total_price"></span>₽</div>
+	    </div>
+	    <div class="modal-footer">
+	        <button class="btn-cancel" onclick="closeModal()">Отмена</button>
+	        <button id="save-btn" class="btn-save">Сохранить</button>
+	    </div>
+	</template>
+
+	<template id="delete-order-template">
+	    <div class="modal-header">
+	        <h3>Удаление заказа</h3>
+	        <span class="close-btn" onclick="closeModal()"></span>
+	    </div>
+	    <div class="modal-body">
+	        <p>Вы уверены, что хотите удалить этот заказ?</p>
+	    </div>
+	    <div class="modal-footer">
+	        <button class="btn-cancel" onclick="closeModal()">Отмена</button>
+	        <button id="confirm-delete-btn" class="btn-save" style="background-color: #d9534f;">Удалить</button>
+	    </div>
+	</template>
+
+	<script src="orders.js"></script>
+
+	<footer id="contacts">
+		<p><a href="tel:+70000000000">Позвонить нам +7-000-000-00-00</a></p>
+	</footer>
+</html>

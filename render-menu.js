@@ -1,123 +1,165 @@
 document.addEventListener("DOMContentLoaded", function () {
+    let menuItems = [];
 
-    const order = { soup: null, main: null, drink: null };
+    const order = { 
+        "soup": null, 
+        "main-course": null, 
+        "salad": null, 
+        "drink": null, 
+        "dessert": null 
+    };
 
-    const orderEmpty = document.getElementById('order-empty');
-    const orderDetails = document.getElementById('order-details');
+    const categories = ['soup', 'main-course', 'salad', 'drink', 'dessert'];
+    const storageKey = 'currentOrder';
 
-    const orderSoup = document.getElementById('order-soup');
-    const orderMain = document.getElementById('order-main');
-    const orderDrink = document.getElementById('order-drink');
-    const orderTotal = document.getElementById('order-total');
+    const checkoutPanel = document.getElementById('checkout-panel');
+    const panelTotal = document.getElementById('panel-total');
+    const checkoutLink = document.getElementById('checkout-link');
 
-    const form = document.getElementById('make-order');
+    function saveToLocalStorage() {
+        const ids = {};
+        for (const category in order) {
+            if (order[category]) ids[category] = order[category].id;
+        }
+        localStorage.setItem(storageKey, JSON.stringify(ids));
+    }
 
-    const categories = ['soup', 'main', 'drink'];
+    function loadFromLocalStorage() {
+        const savedData = localStorage.getItem(storageKey);
+        if (savedData) {
+            const ids = JSON.parse(savedData);
+            for (const category in ids) {
+                const dish = menuItems.find(item => item.id === ids[category]);
+                if (dish) order[category] = dish;
+            }
+        }
+    }
+
+    function checkIsComboComplete() {
+        const selected = {
+            soup: order.soup !== null,
+            main: order["main-course"] !== null,
+            salad: order.salad !== null,
+            drink: order.drink !== null,
+            desert: order.dessert !== null 
+        };
+
+        if (typeof getValidationError === 'function') {
+            const error = getValidationError(selected);
+            console.log("Результат:", error);
+            return error === null;
+        }
+        
+        return order["main-course"] !== null && order.drink !== null;
+    }
+
+    function updateOrderUI() {
+        const total = Object.values(order).reduce((sum, item) => sum + (item?.price || 0), 0);
+        
+        if (checkoutPanel) {
+            checkoutPanel.style.display = total > 0 ? 'flex' : 'none';
+            if (panelTotal) panelTotal.textContent = total + '₽';
+        }
+
+        if (checkoutLink) {
+            const isComplete = checkIsComboComplete();
+            if (isComplete) {
+                checkoutLink.classList.remove('disabled');
+                checkoutLink.style.pointerEvents = "auto";
+                checkoutLink.style.opacity = "1";
+                checkoutLink.style.cursor = "pointer";
+            } else {
+                checkoutLink.classList.add('disabled');
+                checkoutLink.style.pointerEvents = "none";
+                checkoutLink.style.opacity = "0.5";
+                checkoutLink.style.cursor = "not-allowed";
+            }
+        }
+
+        document.querySelectorAll('.food-card').forEach(card => {
+            const keyword = card.dataset.dish;
+            const item = menuItems.find(el => el.keyword === keyword);
+            if (item && order[item.category]?.id === item.id) {
+                card.classList.add('selected-card');
+                card.style.border = "2px solid tomato";
+            } else {
+                card.classList.remove('selected-card');
+                card.style.border = "none";
+            }
+        });
+
+        const fields = {
+            'order-soup': [order.soup, 'Суп не выбран'],
+            'order-main': [order["main-course"], 'Главное блюдо не выбрано'],
+            'order-salad': [order.salad, 'Салат/стартер не выбран'],
+            'order-drink': [order.drink, 'Напиток не выбран'],
+            'order-desert': [order.dessert, 'Десерт не выбран']
+        };
+        for (const [id, data] of Object.entries(fields)) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = data[0] ? `${data[0].name} ${data[0].price}₽` : data[1];
+        }
+    }
+
+    async function loadDishes() {
+        const apiUrl = 'https://edu.std-900.ist.mospolytech.ru/labs/api/dishes';
+        try {
+            const response = await fetch(apiUrl);
+            menuItems = await response.json();
+            loadFromLocalStorage();
+            categories.forEach(category => renderCategory(category));
+            updateOrderUI();
+        } catch (e) { console.error(e); }
+    }
 
     function createFoodCard(item) {
         const card = document.createElement('div');
-        card.classList.add('food-card');
+        card.className = 'food-card';
         card.dataset.dish = item.keyword;
-
-        const img = document.createElement('img');
-        img.src = item.image;
-        img.classList.add('food');
-
-        const price = document.createElement('p');
-        price.classList.add('price');
-        price.innerHTML = item.price + '₽';
-
-        const name = document.createElement('p');
-        name.classList.add('name');
-        name.textContent = item.name;
-
-        const bottom = document.createElement('div');
-        bottom.classList.add('bottom');
-
-        const weight = document.createElement('p');
-        weight.classList.add('weight');
-        weight.textContent = item.count;
-
-        const button = document.createElement('button');
-        button.type = "button";
-        button.textContent = 'Добавить';
-
-        bottom.append(weight, button);
-        card.append(img, price, name, bottom);
-
+        card.innerHTML = `
+            <img src="${item.image}" class="food">
+            <p class="price">${item.price}₽</p>
+            <p class="name">${item.name}</p>
+            <div class="bottom">
+                <p class="weight">${item.count}</p>
+                <button type="button">Добавить</button>
+            </div>`;
         return card;
     }
-    
-    categories.forEach(category => {
-        
-        const categoryGrid = document.querySelector(`.grid-food[data-category="${category}"]`);
-        
-        if (!categoryGrid) return;
 
+    function renderCategory(category, activeKind = null) {
+        const grid = document.querySelector(`.grid-food[data-category="${category}"]`);
+        if (!grid) return;
+        grid.innerHTML = '';
         const items = menuItems
-            .filter(item => item.category === category)
+            .filter(item => item.category === category && (!activeKind || item.kind === activeKind))
             .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-
-        items.forEach(item => {
-            const card = createFoodCard(item);
-            categoryGrid.appendChild(card);
-        });
-    });
-
-    function updateOrderUI() {
-        if (!order.soup && !order.main && !order.drink) {
-            orderEmpty.style.display = "block";
-            orderDetails.style.display = "none";
-            return;
-        }
-
-        orderEmpty.style.display = "none";
-        orderDetails.style.display = "block";
-
-        orderSoup.innerHTML = order.soup
-            ? `${order.soup.name} ${order.soup.price}₽`
-            : 'Суп не выбран';
-
-        orderMain.innerHTML = order.main
-            ? `${order.main.name} ${order.main.price}₽`
-            : 'Блюдо не выбрано';
-
-        orderDrink.innerHTML = order.drink
-            ? `${order.drink.name} ${order.drink.price}₽`
-            : 'Напиток не выбран';
-
-        const total = (order.soup?.price || 0) + (order.main?.price || 0) + (order.drink?.price || 0);
-        orderTotal.textContent = total;
+        items.forEach(item => grid.appendChild(createFoodCard(item)));
+        updateOrderUI();
     }
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', (e) => {
         const card = e.target.closest('.food-card');
         if (!card) return;
-
-        const keyword = card.dataset.dish;
-        const item = menuItems.find(el => el.keyword === keyword);
-        if (!item) return;
-
-        if (item.category === 'soup') {
-            order.soup = item;
-        } else if (item.category === 'main') {
-            order.main = item;
-        } else if (item.category === 'drink') {
-            order.drink = item;
+        const item = menuItems.find(el => el.keyword === card.dataset.dish);
+        if (item) {
+            order[item.category] = item;
+            saveToLocalStorage();
+            updateOrderUI();
         }
-
-        updateOrderUI();
     });
 
-    if (form) {
-        form.addEventListener('reset', () => {
-            order.soup = null;
-            order.main = null;
-            order.drink = null;
-            updateOrderUI();
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const container = btn.closest('.filters');
+            const category = container.dataset.category;
+            const kind = btn.dataset.kind;
+            
+            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCategory(category, kind);
         });
-    }
+    });
 
-    updateOrderUI();
-
+    loadDishes();
 });
